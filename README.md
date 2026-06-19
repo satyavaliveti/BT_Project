@@ -52,4 +52,3 @@ The starter version compares `LatestEvent` and `LatestRSAEvent` from the BT4U fe
 - Within 60 seconds: green
 - More than 60 seconds early: purple
 
-If you later find a more official schedule-adherence field in the BT4U data, update `get_schedule_status()` in `server.py`.
