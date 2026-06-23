@@ -1,0 +1,948 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blacksburg Transit Tracker</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIINfQnc8d+TN8fUTnLyykSoRmtu8JAI5H0="
+    crossorigin=""
+  >
+  <style>
+    :root {
+      --ahead: #7c3aed;
+      --late: #dc2626;
+      --on-time: #16a34a;
+      --unknown: #64748b;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --border: #dbe3ef;
+      --text: #172033;
+      --muted: #64748b;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef2f7;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .dashboard {
+      position: absolute;
+      inset: 16px auto 16px 16px;
+      z-index: 1000;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 12px;
+      width: min(410px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .icon-button,
+    .primary-button,
+    .secondary-button,
+    .chip {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--text);
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .icon-button:hover,
+    .primary-button:hover,
+    .secondary-button:hover,
+    .chip:hover {
+      transform: translateY(-1px);
+      border-color: #94a3b8;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+    }
+
+    .search {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .primary-button,
+    .secondary-button {
+      padding: 10px 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .primary-button {
+      border-color: #1d4ed8;
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .secondary-button.active {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .stat-card {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel-soft);
+      text-align: left;
+    }
+
+    .stat-card.active {
+      outline: 3px solid rgba(37, 99, 235, 0.18);
+      border-color: #2563eb;
+      background: #ffffff;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .scroll-area {
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #475569;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chip.active {
+      border-color: #1d4ed8;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    .route-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.2);
+    }
+
+    .bus-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .bus-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      text-align: left;
+    }
+
+    .bus-row:hover,
+    .bus-row.active {
+      border-color: #2563eb;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+    }
+
+    .bus-badge {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .bus-main {
+      display: grid;
+      gap: 3px;
+    }
+
+    .bus-name {
+      font-weight: 800;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 74px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .on-time-bg {
+      background: var(--on-time);
+    }
+
+    .late-bg {
+      background: var(--late);
+    }
+
+    .ahead-bg {
+      background: var(--ahead);
+    }
+
+    .unknown-bg {
+      background: var(--unknown);
+    }
+
+    .details-panel {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1000;
+      width: min(390px, calc(100vw - 32px));
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .details-panel.hidden {
+      display: none;
+    }
+
+    .details-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .details-title {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 7px 12px;
+      font-size: 14px;
+    }
+
+    .details-grid strong {
+      color: #334155;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.2);
+    }
+
+    .status-line {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .bus-marker {
+      display: grid;
+      position: relative;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.35);
+    }
+
+    .bus-marker::after {
+      content: "";
+      position: absolute;
+      top: -10px;
+      width: 0;
+      height: 0;
+      border-right: 6px solid transparent;
+      border-left: 6px solid transparent;
+      border-bottom: 10px solid currentColor;
+    }
+
+    .bus-marker.selected {
+      outline: 4px solid rgba(37, 99, 235, 0.35);
+    }
+
+    .bus-marker.on-time {
+      background: var(--on-time);
+      color: var(--on-time);
+    }
+
+    .bus-marker.late {
+      background: var(--late);
+      color: var(--late);
+    }
+
+    .bus-marker.ahead {
+      background: var(--ahead);
+      color: var(--ahead);
+    }
+
+    .bus-marker.unknown {
+      background: var(--unknown);
+      color: var(--unknown);
+    }
+
+    .bus-marker span {
+      position: relative;
+      z-index: 1;
+      color: #ffffff;
+      text-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
+    }
+
+    .popup-title {
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .popup-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 10px;
+      min-width: 220px;
+    }
+
+    .popup-grid strong {
+      color: #334155;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard {
+        right: 16px;
+        width: auto;
+        max-height: 48vh;
+      }
+
+      .details-panel {
+        left: 16px;
+        right: 16px;
+        width: auto;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <aside class="dashboard" aria-label="Transit controls">
+    <div>
+      <div class="title-row">
+        <div>
+          <h1>Blacksburg Transit Tracker</h1>
+          <p class="muted">Live buses from BT4U. Filter, search, and click buses for details.</p>
+        </div>
+        <button id="collapseButton" class="icon-button" title="Hide panel">-</button>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background: var(--on-time);"></span>On time</span>
+        <span class="legend-item"><span class="legend-dot" style="background: var(--late);"></span>Late</span>
+        <span class="legend-item"><span class="legend-dot" style="background: var(--ahead);"></span>Ahead</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="searchInput" class="search" type="search" placeholder="Search route, bus, stop">
+      <button id="refreshButton" class="primary-button">Refresh</button>
+      <button id="pauseButton" class="secondary-button">Pause</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="scroll-area">
+      <div class="section-title">
+        <span>Routes</span>
+        <button id="resetFiltersButton" class="secondary-button">Reset</button>
+      </div>
+      <div id="routeFilters" class="chip-group"></div>
+
+      <div class="section-title">
+        <span>Buses</span>
+        <button id="fitMapButton" class="secondary-button">Fit Map</button>
+      </div>
+      <div id="busList" class="bus-list"></div>
+    </div>
+
+    <p id="status" class="status-line">Loading buses...</p>
+  </aside>
+
+  <button id="showPanelButton" class="icon-button" style="position:absolute; left:16px; top:16px; z-index:1000; display:none;" title="Show panel">+</button>
+
+  <section id="detailsPanel" class="details-panel hidden" aria-label="Selected bus details">
+    <div class="details-top">
+      <div>
+        <p class="muted">Selected Bus</p>
+        <h2 id="detailsTitle" class="details-title">No bus selected</h2>
+      </div>
+      <button id="closeDetailsButton" class="icon-button" title="Close details">x</button>
+    </div>
+    <div id="detailsContent" class="details-grid"></div>
+  </section>
+
+  <main id="map"></main>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script>
+    const REFRESH_MS = 15000;
+    const BLACKSBURG_CENTER = [37.2296, -80.4139];
+
+    const statusElement = document.querySelector("#status");
+    const statsElement = document.querySelector("#stats");
+    const routeFiltersElement = document.querySelector("#routeFilters");
+    const busListElement = document.querySelector("#busList");
+    const searchInput = document.querySelector("#searchInput");
+    const refreshButton = document.querySelector("#refreshButton");
+    const pauseButton = document.querySelector("#pauseButton");
+    const fitMapButton = document.querySelector("#fitMapButton");
+    const resetFiltersButton = document.querySelector("#resetFiltersButton");
+    const detailsPanel = document.querySelector("#detailsPanel");
+    const detailsTitle = document.querySelector("#detailsTitle");
+    const detailsContent = document.querySelector("#detailsContent");
+    const closeDetailsButton = document.querySelector("#closeDetailsButton");
+    const collapseButton = document.querySelector("#collapseButton");
+    const showPanelButton = document.querySelector("#showPanelButton");
+    const dashboard = document.querySelector(".dashboard");
+
+    const busMarkers = new Map();
+    let routeInfo = {};
+    let allBuses = [];
+    let selectedRoute = "all";
+    let selectedStatus = "all";
+    let selectedBusId = null;
+    let searchText = "";
+    let refreshTimer = null;
+    let isPaused = false;
+
+    const map = L.map("map").setView(BLACKSBURG_CENTER, 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    function cssClassForStatus(status) {
+      if (status === "on-time") {
+        return "on-time";
+      }
+      if (status === "late") {
+        return "late";
+      }
+      if (status === "ahead") {
+        return "ahead";
+      }
+      return "unknown";
+    }
+
+    function backgroundClassForStatus(status) {
+      return `${cssClassForStatus(status)}-bg`;
+    }
+
+    function labelForStatus(status) {
+      if (status === "on-time") {
+        return "On time";
+      }
+      if (status === "late") {
+        return "Late";
+      }
+      if (status === "ahead") {
+        return "Ahead";
+      }
+      return "Unknown";
+    }
+
+    function routeColor(routeShortName) {
+      return routeInfo[routeShortName]?.color || "#334155";
+    }
+
+    function routeName(routeShortName, fallback) {
+      return routeInfo[routeShortName]?.name || fallback || "Unknown route";
+    }
+
+    function markerIcon(bus) {
+      const routeLabel = bus.routeShortName || "?";
+      const selectedClass = bus.id === selectedBusId ? "selected" : "";
+      const statusClass = cssClassForStatus(bus.status);
+
+      return L.divIcon({
+        className: "",
+        html: `
+          <div class="bus-marker ${statusClass} ${selectedClass}" style="transform: rotate(${bus.direction}deg);">
+            <span style="transform: rotate(${-bus.direction}deg);">${routeLabel}</span>
+          </div>
+        `,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19],
+        popupAnchor: [0, -20],
+      });
+    }
+
+    function popupHtml(bus) {
+      const atStop = bus.isBusAtStop ? "Yes" : "No";
+
+      return `
+        <div class="popup-title">Bus ${bus.id} - ${bus.statusLabel}</div>
+        <div class="popup-grid">
+          <strong>Route</strong><span>${bus.routeShortName} - ${routeName(bus.routeShortName, bus.patternName)}</span>
+          <strong>Last stop</strong><span>${bus.lastStopName || "Unknown"}</span>
+          <strong>At stop</strong><span>${atStop}</span>
+          <strong>Speed</strong><span>${bus.speed} mph</span>
+          <strong>Capacity</strong><span>${bus.capacityPercent}%</span>
+          <strong>Updated</strong><span>${formatTime(bus.latestEvent)}</span>
+        </div>
+      `;
+    }
+
+    function formatTime(value) {
+      if (!value) {
+        return "Unknown";
+      }
+
+      return new Date(value).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    }
+
+    function filteredBuses() {
+      return allBuses.filter((bus) => {
+        const routeMatches = selectedRoute === "all" || bus.routeShortName === selectedRoute;
+        const statusMatches = selectedStatus === "all" || bus.status === selectedStatus;
+        const searchMatches = [
+          bus.id,
+          bus.routeShortName,
+          bus.patternName,
+          bus.lastStopName,
+          routeName(bus.routeShortName, bus.patternName),
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(searchText);
+
+        return routeMatches && statusMatches && searchMatches;
+      });
+    }
+
+    function renderStats() {
+      const stats = [
+        { key: "all", label: "All", count: allBuses.length },
+        { key: "on-time", label: "On Time", count: allBuses.filter((bus) => bus.status === "on-time").length },
+        { key: "late", label: "Late", count: allBuses.filter((bus) => bus.status === "late").length },
+        { key: "ahead", label: "Ahead", count: allBuses.filter((bus) => bus.status === "ahead").length },
+      ];
+
+      statsElement.innerHTML = stats.map((item) => `
+        <button class="stat-card ${selectedStatus === item.key ? "active" : ""}" data-status="${item.key}">
+          <span class="stat-number">${item.count}</span>
+          <span class="stat-label">${item.label}</span>
+        </button>
+      `).join("");
+
+      for (const button of statsElement.querySelectorAll("button")) {
+        button.addEventListener("click", () => {
+          selectedStatus = button.dataset.status;
+          render();
+        });
+      }
+    }
+
+    function renderRouteFilters() {
+      const activeRoutes = [...new Set(allBuses.map((bus) => bus.routeShortName))]
+        .filter(Boolean)
+        .sort();
+
+      routeFiltersElement.innerHTML = [
+        `<button class="chip ${selectedRoute === "all" ? "active" : ""}" data-route="all">All routes</button>`,
+        ...activeRoutes.map((shortName) => `
+          <button class="chip ${selectedRoute === shortName ? "active" : ""}" data-route="${shortName}">
+            <span class="route-color" style="background:${routeColor(shortName)}"></span>
+            ${shortName}
+          </button>
+        `),
+      ].join("");
+
+      for (const button of routeFiltersElement.querySelectorAll("button")) {
+        button.addEventListener("click", () => {
+          selectedRoute = button.dataset.route;
+          render();
+        });
+      }
+    }
+
+    function renderBusList(visibleBuses) {
+      if (visibleBuses.length === 0) {
+        busListElement.innerHTML = `<p class="muted">No buses match your filters.</p>`;
+        return;
+      }
+
+      busListElement.innerHTML = visibleBuses.map((bus) => `
+        <button class="bus-row ${bus.id === selectedBusId ? "active" : ""}" data-bus-id="${bus.id}">
+          <span class="bus-badge" style="background:${routeColor(bus.routeShortName)}">${bus.routeShortName || "?"}</span>
+          <span class="bus-main">
+            <span class="bus-name">Bus ${bus.id}</span>
+            <span class="muted">${routeName(bus.routeShortName, bus.patternName)}</span>
+            <span class="muted">${bus.lastStopName || "Unknown stop"}</span>
+          </span>
+          <span class="status-pill ${backgroundClassForStatus(bus.status)}">${labelForStatus(bus.status)}</span>
+        </button>
+      `).join("");
+
+      for (const button of busListElement.querySelectorAll("button")) {
+        button.addEventListener("click", () => {
+          selectBus(button.dataset.busId, true);
+        });
+      }
+    }
+
+    function renderMarkers(visibleBuses) {
+      const visibleIds = new Set();
+
+      for (const bus of visibleBuses) {
+        const position = [bus.latitude, bus.longitude];
+        visibleIds.add(bus.id);
+
+        if (busMarkers.has(bus.id)) {
+          const marker = busMarkers.get(bus.id);
+          moveMarker(marker, position);
+          marker.setIcon(markerIcon(bus));
+          marker.setPopupContent(popupHtml(bus));
+        } else {
+          const marker = L.marker(position, { icon: markerIcon(bus) })
+            .bindPopup(popupHtml(bus))
+            .addTo(map);
+
+          marker.on("click", () => {
+            selectBus(bus.id, false);
+          });
+
+          busMarkers.set(bus.id, marker);
+        }
+      }
+
+      for (const [busId, marker] of busMarkers.entries()) {
+        if (!visibleIds.has(busId)) {
+          marker.remove();
+          busMarkers.delete(busId);
+        }
+      }
+    }
+
+    function renderDetails() {
+      const bus = allBuses.find((item) => item.id === selectedBusId);
+
+      if (!bus) {
+        detailsPanel.classList.add("hidden");
+        return;
+      }
+
+      detailsTitle.textContent = `Bus ${bus.id} - ${bus.statusLabel}`;
+      detailsContent.innerHTML = `
+        <strong>Route</strong><span>${bus.routeShortName} - ${routeName(bus.routeShortName, bus.patternName)}</span>
+        <strong>Last stop</strong><span>${bus.lastStopName || "Unknown"}</span>
+        <strong>At stop</strong><span>${bus.isBusAtStop ? "Yes" : "No"}</span>
+        <strong>Speed</strong><span>${bus.speed} mph</span>
+        <strong>Capacity</strong><span>${bus.capacityPercent}%</span>
+        <strong>Direction</strong><span>${bus.direction} degrees</span>
+        <strong>Updated</strong><span>${formatTime(bus.latestEvent)}</span>
+        <strong>Schedule event</strong><span>${formatTime(bus.latestScheduleEvent)}</span>
+      `;
+      detailsPanel.classList.remove("hidden");
+    }
+
+    function render() {
+      const visibleBuses = filteredBuses();
+      renderStats();
+      renderRouteFilters();
+      renderBusList(visibleBuses);
+      renderMarkers(visibleBuses);
+      renderDetails();
+
+      statusElement.textContent = `Showing ${visibleBuses.length} of ${allBuses.length} buses. Last refreshed at ${new Date().toLocaleTimeString()}.`;
+    }
+
+    function selectBus(busId, panToBus) {
+      selectedBusId = busId;
+      const bus = allBuses.find((item) => item.id === busId);
+
+      if (bus && panToBus) {
+        map.setView([bus.latitude, bus.longitude], Math.max(map.getZoom(), 15), { animate: true });
+      }
+
+      if (busMarkers.has(busId)) {
+        busMarkers.get(busId).openPopup();
+      }
+
+      render();
+    }
+
+    function moveMarker(marker, destination) {
+      const start = marker.getLatLng();
+      const startTime = performance.now();
+      const duration = 1000;
+
+      function animate(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const lat = start.lat + (destination[0] - start.lat) * progress;
+        const lng = start.lng + (destination[1] - start.lng) * progress;
+
+        marker.setLatLng([lat, lng]);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function fitVisibleBuses() {
+      const visibleBuses = filteredBuses();
+
+      if (visibleBuses.length === 0) {
+        map.setView(BLACKSBURG_CENTER, 13);
+        return;
+      }
+
+      const bounds = L.latLngBounds(visibleBuses.map((bus) => [bus.latitude, bus.longitude]));
+      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
+    }
+
+    async function loadRoutes() {
+      const response = await fetch("/api/routes");
+      if (!response.ok) {
+        throw new Error("Could not load route information.");
+      }
+
+      const data = await response.json();
+      routeInfo = data.routes;
+    }
+
+    async function loadBuses() {
+      const response = await fetch("/api/buses");
+      if (!response.ok) {
+        throw new Error("Could not load bus information.");
+      }
+
+      const data = await response.json();
+      allBuses = data.buses;
+      render();
+    }
+
+    async function refresh() {
+      try {
+        refreshButton.disabled = true;
+        await loadBuses();
+      } catch (error) {
+        statusElement.textContent = error.message;
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    function setPaused(nextValue) {
+      isPaused = nextValue;
+      pauseButton.textContent = isPaused ? "Resume" : "Pause";
+      pauseButton.classList.toggle("active", isPaused);
+
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+      }
+
+      refreshTimer = setInterval(() => {
+        if (!isPaused) {
+          refresh();
+        }
+      }, REFRESH_MS);
+    }
+
+    function resetFilters() {
+      selectedRoute = "all";
+      selectedStatus = "all";
+      searchText = "";
+      selectedBusId = null;
+      searchInput.value = "";
+      render();
+    }
+
+    async function start() {
+      try {
+        await loadRoutes();
+      } catch (error) {
+        console.warn(error);
+      }
+
+      searchInput.addEventListener("input", () => {
+        searchText = searchInput.value.trim().toLowerCase();
+        render();
+      });
+
+      refreshButton.addEventListener("click", refresh);
+      pauseButton.addEventListener("click", () => setPaused(!isPaused));
+      fitMapButton.addEventListener("click", fitVisibleBuses);
+      resetFiltersButton.addEventListener("click", resetFilters);
+
+      closeDetailsButton.addEventListener("click", () => {
+        selectedBusId = null;
+        render();
+      });
+
+      collapseButton.addEventListener("click", () => {
+        dashboard.style.display = "none";
+        showPanelButton.style.display = "block";
+      });
+
+      showPanelButton.addEventListener("click", () => {
+        dashboard.style.display = "grid";
+        showPanelButton.style.display = "none";
+      });
+
+      await refresh();
+      setPaused(false);
+    }
+
+    start();
+  </script>
+</body>
+</html>

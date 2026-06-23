@@ -1,0 +1,265 @@
+{
+  "generatedAt": "2026-06-22T19:53:40",
+  "requestedDays": 3,
+  "availableServiceDays": 1,
+  "gapThresholdSeconds": 120,
+  "hotspots": [
+    {
+      "id": "1115",
+      "routeShortName": "Multi",
+      "routes": [
+        "BMR",
+        "CAS",
+        "CRC"
+      ],
+      "stopCode": "1115",
+      "stopName": "Wright House",
+      "latitude": 37.22675,
+      "longitude": -80.4258,
+      "eventCount": 5,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 18,
+      "closestGapSeconds": 8,
+      "sampleTripIds": [
+        "14899207-2b54-4c3e-bf67-23afdc266dab",
+        "3ffa22ec-ad6c-4835-a05f-94ad889dbdd6",
+        "41965d02-57ea-4aeb-8807-0e6d42c1d7ee",
+        "5bfba366-503a-4e28-ac5d-4e0a5fa56f2c",
+        "6ae86f6d-803a-4e9c-a98c-6ee79c3d8536",
+        "a7766a45-eab0-4ca6-91a1-b1b86acaae6b"
+      ]
+    },
+    {
+      "id": "1151",
+      "routeShortName": "Multi",
+      "routes": [
+        "BMR",
+        "CAS",
+        "CRC"
+      ],
+      "stopCode": "1151",
+      "stopName": "West Campus/Grove Sbnd",
+      "latitude": 37.22535,
+      "longitude": -80.4251,
+      "eventCount": 5,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 17,
+      "closestGapSeconds": 5,
+      "sampleTripIds": [
+        "14899207-2b54-4c3e-bf67-23afdc266dab",
+        "3ffa22ec-ad6c-4835-a05f-94ad889dbdd6",
+        "41965d02-57ea-4aeb-8807-0e6d42c1d7ee",
+        "5bfba366-503a-4e28-ac5d-4e0a5fa56f2c",
+        "6ae86f6d-803a-4e9c-a98c-6ee79c3d8536",
+        "a7766a45-eab0-4ca6-91a1-b1b86acaae6b"
+      ]
+    },
+    {
+      "id": "1116",
+      "routeShortName": "Multi",
+      "routes": [
+        "BMR",
+        "CAS",
+        "CRC"
+      ],
+      "stopCode": "1116",
+      "stopName": "Litton Reaves Hall",
+      "latitude": 37.22244,
+      "longitude": -80.4235,
+      "eventCount": 5,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 15,
+      "closestGapSeconds": 4,
+      "sampleTripIds": [
+        "14899207-2b54-4c3e-bf67-23afdc266dab",
+        "3ffa22ec-ad6c-4835-a05f-94ad889dbdd6",
+        "41965d02-57ea-4aeb-8807-0e6d42c1d7ee",
+        "5bfba366-503a-4e28-ac5d-4e0a5fa56f2c",
+        "6ae86f6d-803a-4e9c-a98c-6ee79c3d8536",
+        "a7766a45-eab0-4ca6-91a1-b1b86acaae6b"
+      ]
+    },
+    {
+      "id": "1422",
+      "routeShortName": "Multi",
+      "routes": [
+        "HDG",
+        "SMS"
+      ],
+      "stopCode": "1422",
+      "stopName": "Main/Collegiate Ct Sbnd",
+      "latitude": 37.23431,
+      "longitude": -80.4195,
+      "eventCount": 4,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 4,
+      "closestGapSeconds": 1,
+      "sampleTripIds": [
+        "01c64396-3592-43ad-8f37-d6c7a83f8bda",
+        "29dc1f66-0761-49e4-a685-acc858881248",
+        "69a8f86a-880a-4f3d-b76a-c29419355ea1",
+        "920c6d5f-242f-4799-8d68-67295a1b7da1",
+        "992e2ad7-587e-4364-b4d3-5e29d5701861",
+        "9be9e6a0-17e2-485a-9f2d-d223c5c0e46b"
+      ]
+    },
+    {
+      "id": "1440",
+      "routeShortName": "Multi",
+      "routes": [
+        "HDG",
+        "SMS"
+      ],
+      "stopCode": "1440",
+      "stopName": "Main/Faculty Sbnd",
+      "latitude": 37.23225,
+      "longitude": -80.4169,
+      "eventCount": 4,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 8,
+      "closestGapSeconds": 5,
+      "sampleTripIds": [
+        "01c64396-3592-43ad-8f37-d6c7a83f8bda",
+        "29dc1f66-0761-49e4-a685-acc858881248",
+        "69a8f86a-880a-4f3d-b76a-c29419355ea1",
+        "920c6d5f-242f-4799-8d68-67295a1b7da1",
+        "992e2ad7-587e-4364-b4d3-5e29d5701861",
+        "9be9e6a0-17e2-485a-9f2d-d223c5c0e46b"
+      ]
+    },
+    {
+      "id": "1600",
+      "routeShortName": "Multi",
+      "routes": [
+        "HDG",
+        "SMS"
+      ],
+      "stopCode": "1600",
+      "stopName": "Main/Roanoke Sbnd",
+      "latitude": 37.2297,
+      "longitude": -80.4143,
+      "eventCount": 4,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 8,
+      "closestGapSeconds": 4,
+      "sampleTripIds": [
+        "01c64396-3592-43ad-8f37-d6c7a83f8bda",
+        "29dc1f66-0761-49e4-a685-acc858881248",
+        "69a8f86a-880a-4f3d-b76a-c29419355ea1",
+        "920c6d5f-242f-4799-8d68-67295a1b7da1",
+        "992e2ad7-587e-4364-b4d3-5e29d5701861",
+        "9be9e6a0-17e2-485a-9f2d-d223c5c0e46b"
+      ]
+    },
+    {
+      "id": "1123",
+      "routeShortName": "Multi",
+      "routes": [
+        "BMR",
+        "CAS"
+      ],
+      "stopCode": "1123",
+      "stopName": "McComas Hall",
+      "latitude": 37.22119,
+      "longitude": -80.4223,
+      "eventCount": 3,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 20,
+      "closestGapSeconds": 10,
+      "sampleTripIds": [
+        "3ffa22ec-ad6c-4835-a05f-94ad889dbdd6",
+        "41965d02-57ea-4aeb-8807-0e6d42c1d7ee",
+        "5bfba366-503a-4e28-ac5d-4e0a5fa56f2c",
+        "a7766a45-eab0-4ca6-91a1-b1b86acaae6b",
+        "c3a5c8ca-d6ba-4575-bae1-42376b91300e",
+        "f706738f-7967-44f9-be9b-62499a2219dc"
+      ]
+    },
+    {
+      "id": "1421",
+      "routeShortName": "Multi",
+      "routes": [
+        "NMG",
+        "UCB"
+      ],
+      "stopCode": "1421",
+      "stopName": "Main/Kabrich Sbnd",
+      "latitude": 37.236,
+      "longitude": -80.4211,
+      "eventCount": 3,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 71,
+      "closestGapSeconds": 56,
+      "sampleTripIds": [
+        "8ff924ee-dadf-4d88-afb6-ec2b6048cde8",
+        "a713cc01-76ee-4315-bac8-185e2e776461",
+        "dbf41e39-6976-48aa-95a6-7b70493cb127",
+        "e6257336-a28e-43b1-9629-c39fae03101e",
+        "e8233d48-2be0-4d76-b0da-c76ba03ddd1b",
+        "eaa90d16-7538-4580-8da7-7a9b47f1cbb4"
+      ]
+    },
+    {
+      "id": "1636",
+      "routeShortName": "Multi",
+      "routes": [
+        "CRC",
+        "SMS"
+      ],
+      "stopCode": "1636",
+      "stopName": "Industrial Park/Transportation Res Ebnd",
+      "latitude": 37.19364,
+      "longitude": -80.4003,
+      "eventCount": 2,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 84,
+      "closestGapSeconds": 47,
+      "sampleTripIds": [
+        "14899207-2b54-4c3e-bf67-23afdc266dab",
+        "29dc1f66-0761-49e4-a685-acc858881248",
+        "69a8f86a-880a-4f3d-b76a-c29419355ea1",
+        "6ae86f6d-803a-4e9c-a98c-6ee79c3d8536"
+      ]
+    },
+    {
+      "id": "1610",
+      "routeShortName": "Multi",
+      "routes": [
+        "SMA",
+        "SMS"
+      ],
+      "stopCode": "1610",
+      "stopName": "Fairfax/New Kent Ebnd",
+      "latitude": 37.20898,
+      "longitude": -80.3961,
+      "eventCount": 1,
+      "observedServiceDays": 1,
+      "firstObservedDate": "2026-06-22",
+      "lastObservedDate": "2026-06-22",
+      "averageGapSeconds": 86,
+      "closestGapSeconds": 86,
+      "sampleTripIds": [
+        "69a8f86a-880a-4f3d-b76a-c29419355ea1",
+        "d8188bc0-9ac5-4d8a-bab1-e0ee5c1c1d9c"
+      ]
+    }
+  ]
+}

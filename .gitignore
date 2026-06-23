@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+
+node_modules/
+dist/
+.vite/
+
+*.log
+.env
+.env.*
+
+blacksburg_transit_ui/bus_bunching_history.jsonl
+blacksburg-transit-react/BT_Project/
