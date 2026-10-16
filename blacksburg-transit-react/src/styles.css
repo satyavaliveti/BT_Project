@@ -172,6 +172,69 @@ small {
   color: #ffffff;
 }
 
+.impact-card {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid #16a34a;
+  border-radius: var(--radius);
+  background: #f0fdf4;
+}
+
+.impact-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.impact-result,
+.impact-live {
+  display: grid;
+  gap: 2px;
+}
+
+.impact-result > span,
+.impact-live > span {
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.impact-result > strong {
+  color: #166534;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.impact-result > b,
+.impact-live > strong {
+  color: #334155;
+  font-size: 12px;
+}
+
+.impact-live {
+  text-align: right;
+}
+
+.impact-card > p {
+  margin: 0;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.impact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 10px;
+  color: #64748b;
+  font-size: 11px;
+}
+
 .toolbar .active,
 .stats .active,
 .chips .active,

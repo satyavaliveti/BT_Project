@@ -128,6 +128,7 @@ function App() {
   const historicalStopRefs = useRef(new Map());
 
   const [buses, setBuses] = useState([]);
+  const [currentBunchingEventCount, setCurrentBunchingEventCount] = useState(null);
   const [bunchingHotspots, setBunchingHotspots] = useState([]);
   const [historicalStopHotspots, setHistoricalStopHotspots] = useState([]);
   const [historicalCoverage, setHistoricalCoverage] = useState(null);
@@ -182,6 +183,11 @@ function App() {
     late: buses.filter((bus) => bus.status === "late").length,
     ahead: buses.filter((bus) => bus.status === "ahead").length,
   }), [buses]);
+
+  const historicalEventObservationCount = useMemo(
+    () => historicalStopHotspots.reduce((total, hotspot) => total + (hotspot.eventCount || 0), 0),
+    [historicalStopHotspots],
+  );
 
   const filteredBuses = useMemo(() => {
     const search = searchText.trim().toLowerCase();
@@ -293,6 +299,7 @@ function App() {
       const bunchingData = await bunchingResponse.json();
 
       setBuses(busesData.buses);
+      setCurrentBunchingEventCount(busesData.currentBunchingEventCount ?? 0);
       setBunchingHotspots(bunchingData.hotspots);
       setLastRefreshed(new Date());
       setError("");
@@ -569,6 +576,32 @@ function App() {
               {isPaused ? "Resume" : "Pause"}
             </button>
           </div>
+
+          <section className="impact-card" aria-label="Recorded bus bunching reduction">
+            <div className="impact-card-top">
+              <div className="impact-result">
+                <span>Bunching reduction</span>
+                <strong>--%</strong>
+                <b>not calculable yet</b>
+              </div>
+              <div className="impact-live">
+                <span>Current snapshot</span>
+                <strong>{currentBunchingEventCount ?? "--"} close pairs</strong>
+                <strong>{lastRefreshed ? `${stats.all} buses monitored` : "Waiting for feed"}</strong>
+              </div>
+            </div>
+            <p>
+              No comparable before-and-after rate is available. Historical data
+              covers {historicalCoverage?.availableServiceDays ?? "--"}
+              {historicalCoverage?.availableServiceDays === 1 ? " service day" : " service days"},
+              and counts stop arrivals within 120 seconds; live pairs use a
+              250-meter rule.
+            </p>
+            <div className="impact-meta">
+              <span>Recorded stop-event observations: {historicalEventObservationCount}</span>
+              <span>Updated {formatTime(lastRefreshed)}</span>
+            </div>
+          </section>
 
           <button
             className={`bunching-toggle ${showBunching ? "active" : ""}`}

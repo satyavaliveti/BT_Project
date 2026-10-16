@@ -320,8 +320,14 @@ class TransitHandler(SimpleHTTPRequestHandler):
         try:
             if self.path == "/api/buses":
                 buses = parse_buses(fetch_xml("GetCurrentBusInfo"))
-                record_bunching_events(buses)
-                self.send_json(200, {"buses": buses})
+                current_bunching_events = record_bunching_events(buses)
+                self.send_json(
+                    200,
+                    {
+                        "buses": buses,
+                        "currentBunchingEventCount": len(current_bunching_events),
+                    },
+                )
                 return
 
             if self.path == "/api/routes":
